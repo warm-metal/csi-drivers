@@ -1,3 +1,9 @@
+# csi-common
+
+Only the csi-common package.
+Replace glog w/ klog v2.
+Replace `golang.org/x/net/context` w/ `context`
+
 [![Build Status](https://travis-ci.org/kubernetes-csi/drivers.svg?branch=master)](https://travis-ci.org/kubernetes-csi/drivers)
 # CSI Drivers
 
