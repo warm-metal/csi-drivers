@@ -27,11 +27,12 @@ import (
 )
 
 type CSIDriver struct {
-	name    string
-	nodeID  string
-	version string
-	cap     []*csi.ControllerServiceCapability
-	vc      []*csi.VolumeCapability_AccessMode
+	name      string
+	nodeID    string
+	version   string
+	cap       []*csi.ControllerServiceCapability
+	vc        []*csi.VolumeCapability_AccessMode
+	pluginCap []*csi.PluginCapability
 }
 
 // Creates a NewCSIDriver object. Assumes vendor version is equal to driver version &
@@ -99,4 +100,27 @@ func (d *CSIDriver) AddVolumeCapabilityAccessModes(vc []csi.VolumeCapability_Acc
 
 func (d *CSIDriver) GetVolumeCapabilityAccessModes() []*csi.VolumeCapability_AccessMode {
 	return d.vc
+}
+
+func (d *CSIDriver) AddPluginCapability(
+	svc []csi.PluginCapability_Service_Type, volume []csi.PluginCapability_VolumeExpansion_Type,
+) {
+	pluginCap := make([]*csi.PluginCapability, 0, len(svc)+len(volume))
+	for _, st := range svc {
+		pluginCap = append(pluginCap, &csi.PluginCapability{
+			Type: &csi.PluginCapability_Service_{
+				Service: &csi.PluginCapability_Service{Type: st},
+			},
+		})
+	}
+
+	for _, ve := range volume {
+		pluginCap = append(pluginCap, &csi.PluginCapability{
+			Type: &csi.PluginCapability_VolumeExpansion_{
+				VolumeExpansion: &csi.PluginCapability_VolumeExpansion{Type: ve},
+			},
+		})
+	}
+	d.pluginCap = pluginCap
+	return
 }
